@@ -5,26 +5,40 @@ const ObjectId = mongoose.Types.ObjectId
 
 const ownerSchema = new Schema({
     Name:{
-        type:String
+        type:String,
+        require:true
     },
     Phone:{
-        type:Number
+        type:Number,
+        require:true
     },
     Email:{
-        type:String
+        type:String,
+        require:true
     },
     Licence:{
-        type:String
+        type:String,
+        require:true
     },
     Adhaar:{
-        type:Number
+        type:Number,
+        require:true
+    },
+    Location:{
+        type:String,
+        require:true
     },
     Password:{
-        type:String
+        type:String,
+        require:true
     },
     wallet:{
         type:Number,
         default:0
+    },
+    images:{
+        type:String,
+        require:true
     },
     status:{
       type:String,

@@ -28,12 +28,12 @@ app.use(cors({
         'Authorization'
     ]
 })) 
-
+ 
 app.use('/admin',adminRouter)
 app.use('/',userRouter)
 app.use('/owner',ownerRouter)
 
-app.listen(2000,()=>{
-    console.log('server connected to port 2000');
+app.listen(3000,()=>{
+    console.log('server connected to port 3000');
 })
 
