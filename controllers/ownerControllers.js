@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import ownerModel from "../model/ownerModel.js";
 import screenModel from "../model/screenModel.js";
 import otpGenerator from "../otpGenerator/otpGenerator.js"
@@ -91,6 +93,7 @@ export const resendOtp = (req, res) => {
 export const login=async(req,res)=>{
     try{
         let response ={}
+        console.log(req.body);
         let {email,password} = req.body
         const owner =await ownerModel.findOne({Email:email})
       
@@ -180,6 +183,7 @@ export const postAddScreen = async(req,res)=>{
 export const getScreen = async(req,res)=>{
     try{
     const ownerId = req.params.id
+    
     const screens = await screenModel.find({ownerId:ownerId})
     if(screens){
         res.send({
@@ -202,9 +206,10 @@ export const deteteScreen = async(req,res)=>{
     try{
       const screenId = req.body.screenId
       const screen = await screenModel.findOne({_id:screenId})
+      const ownerId = screen.ownerId
       if(screen){
         await screenModel.deleteOne({_id: screenId})
-        const screens = await screenModel.find({})
+        const screens = await screenModel.find({ownerId:ownerId})
        res.send({
         success:true,
         message:'Screen deleted successfully',
@@ -473,3 +478,152 @@ export const getAppoval = async(req,res)=>{
         return error.message
      }
 }
+
+export const getStatus = async(req,res)=>{
+    try{
+      const booked = await orderModel.find({ownerId:req.body._id , status:'Booked'})
+      const canceled = await orderModel.find({ownerId:req.body._id , status:'Canceled'})
+      const bookedCount = booked.length
+      const canceledCount = canceled.length
+      res.send({
+        success:true,
+        message:'Your status',
+        data: [bookedCount,canceledCount]
+    })
+    }catch(error) {
+        return error.message
+     }
+}
+
+export const getMonthlySails = async(req,res)=>{
+    try{
+        const ownerId =req.body._id
+        const year = new Date().getFullYear();
+        const userCount = new Array(12).fill(0);
+        const promises = [];
+        
+        for (let month = 1; month <= 12; month++){
+          const start = new Date(`${year}-${month.toString().padStart(2, '0')}-01`);
+          let end;
+          if (month === 12) {
+            end = new Date(`${year}-12-31`);
+          } else {
+            end = new Date(`${year}-${(month + 1).toString().padStart(2, '0')}-01`);
+          }
+          
+          const promise = await orderModel.aggregate([
+            {
+                $match: {
+                  date: {
+                    $gte: start,
+                    $lt: end
+                  },
+                status:'Booked',
+                ownerId: new mongoose.Types.ObjectId(ownerId) 
+                 }
+              },
+              {
+                $group: {
+                  _id: null,
+                  total: { $sum: "$total" }
+                }
+              }
+          ])
+          .then((result) => {
+            if (result.length > 0) {
+              userCount[month - 1] = result[0].total;
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          
+          promises.push(promise);
+        }
+        
+        Promise.all(promises)
+        .then(() => {
+          if(userCount.some((count) => count > 0)){
+            const years = userCount.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue;
+              }, 0);
+          
+            res.send({
+              success:true,
+              message:'Your graph data',
+              data: {userCount,years}
+            })  
+          }else{
+            const userCount = [0,0,0,0,0,0,0,0,0,0,0,0]
+            const years = 0
+            res.send({
+              success:false,
+              message:'No data found',
+              data:{userCount,years}
+            })
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }catch(error) {
+        return error.message
+     }
+}
+
+export const getDailySails = async(req,res)=>{
+    try{
+        const ownerId = req.body._id
+        const currentDate = new Date().toISOString();
+        const startOfDayStr = currentDate.substring(0, 10) + "T00:00:00.000Z"
+        const start = new Date(startOfDayStr)
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + 1);
+        const nextDateISOString = nextDate.toISOString();
+        const endOfDayStr = nextDateISOString.substring(0, 10) + "T00:00:00.000Z"
+        const end = new Date(endOfDayStr)
+        const daily =await orderModel.aggregate([
+            {
+                $match: {
+                  date: {
+                    $gte: start,
+                    $lt: end
+                  },
+                  status: "Booked",
+                  ownerId: new mongoose.Types.ObjectId(ownerId)
+                   // Only match orders with status "Booked"
+                }
+              },
+              {
+                $group: {
+                  _id: null,
+                  total: { $sum: "$total" }
+                }
+              }
+          ])
+          if(daily.lenght){
+            var total = daily[0].total
+          }else{
+            var total=0
+          }
+          
+          const expired = await orderModel.find({paymentstatus:'Expired',ownerId:ownerId})
+          const expiredCount = expired.length
+          const active = await orderModel.find({paymentstatus:'Active',ownerId:ownerId})
+          const activeCount = active.length
+          const screen = await screenModel.find({ownerId:ownerId})
+          const screenCount = screen.length
+          const show = await showModel.find({ownerId:ownerId})
+          const showCount = show.length
+          const order = await orderModel.find({ownerId:ownerId})
+          const orderCount = order.length
+          res.send({
+            success:true,
+            message:'Daily sails',
+            data:{total,expiredCount,activeCount,screenCount,showCount,orderCount}
+          })
+    }catch(error) {
+        return error.message
+     }
+}
+

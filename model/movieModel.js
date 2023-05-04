@@ -14,6 +14,9 @@ const movieSchema = new Schema({
     releaseDate:{
         type:String
     },
+    image:{
+        type:String
+    }
     
 })
 

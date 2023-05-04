@@ -300,6 +300,7 @@ export const postAddMovies = async (req,res)=>{
                           title : req.body.movieDetails.title,
                           language : req.body.movieDetails.original_language,
                           releaseDate : req.body.movieDetails.release_date,
+                          image:req.body.movieDetails.poster_path
                            }
                      
                        const newMovie = new movieModel(movieData)
@@ -392,3 +393,166 @@ export const viewOrder = async(req,res)=>{
         })
     }
 }
+
+export const getStatus = async(req,res)=>{
+    try{
+      const order1 = await orderModel.find({status:'Booked'})
+      const order2 = await orderModel.find({status:'Canceled'})
+      const booked = order1.length
+      const canceled = order2.length
+      res.send({
+        success:true,
+        message:'Your status',
+        data: [booked,canceled]
+    })
+    }catch(error){ 
+        res.send({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+export const getSuccessOrder = async(req,res)=>{
+    try{
+      const orders = await orderModel.find({status:'Booked'})
+      if(orders){
+        res.send({
+            success:true,
+            message:'Your status',
+            data:orders
+        })
+      }
+    }catch(error){
+        res.send({
+            success:false,
+            message:error.message
+        })
+    }
+    }
+
+    export const getMonthlySails = async(req,res)=>{
+        try{
+            const year = new Date().getFullYear();
+const userCount = new Array(12).fill(0);
+const promises = [];
+
+for (let month = 1; month <= 12; month++){
+  const start = new Date(`${year}-${month.toString().padStart(2, '0')}-01`);
+  let end;
+  if (month === 12) {
+    end = new Date(`${year}-12-31`);
+  } else {
+    end = new Date(`${year}-${(month + 1).toString().padStart(2, '0')}-01`);
+  }
+  
+  const promise = orderModel.aggregate([
+    {
+        $match: {
+          date: {
+            $gte: start,
+            $lt: end
+          },
+          status: "Booked" // Only match orders with status "Booked"
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$total" }
+        }
+      }
+  ])
+  .then((result) => {
+    if (result.length > 0) {
+      userCount[month - 1] = result[0].total;
+    }
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+  
+  promises.push(promise);
+}
+
+Promise.all(promises)
+.then(() => {
+  if(userCount.some((count) => count > 0)){
+    res.send({
+      success:true,
+      message:'Your graph data',
+      data: userCount
+    })  
+  }else{
+    res.send({
+      success:false,
+      message:'No data found',
+    })
+  }
+})
+.catch((error) => {
+  console.log(error);
+});
+
+    }catch(error){
+        res.send({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+export const getDailySails = async(req,res)=>{
+       try{
+        const currentDate = new Date().toISOString();
+        const startOfDayStr = currentDate.substring(0, 10) + "T00:00:00.000Z"
+        const start = new Date(startOfDayStr)
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + 1);
+        const nextDateISOString = nextDate.toISOString();
+        const endOfDayStr = nextDateISOString.substring(0, 10) + "T00:00:00.000Z"
+        const end = new Date(endOfDayStr)
+        const daily =await orderModel.aggregate([
+            {
+                $match: {
+                  date: {
+                    $gte: start,
+                    $lt: end
+                  },
+                  status: "Booked" // Only match orders with status "Booked"
+                }
+              },
+              {
+                $group: {
+                  _id: null,
+                  total: { $sum: "$total" }
+                }
+              }
+          ])
+          const users = await userModel.find()
+          const userCount = users.length
+          const owners = await ownerModel.find()
+          const ownerCount = owners.length
+          const expired = await orderModel.find({paymentstatus:'Expired'})
+          const expiredCount = expired.length
+          const active = await orderModel.find({paymentstatus:'Active'})
+          const activeCount = active.length
+          const movies = await movieModel.find()
+          const movieCount = movies.length
+            res.send({
+                success:true,
+                message:'Daily sails',
+                data:{daily,userCount,ownerCount,expiredCount,activeCount,movieCount}
+              })
+        
+          
+       }catch(error){
+        res.send({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+
+

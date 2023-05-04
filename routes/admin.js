@@ -1,5 +1,5 @@
 import express from 'express'
-import { adminLogin, getAdminOwner, getAdminUser, getAllorders, getMovies, postAddMovies, postBlockOwner, postBlockUser, postDeleteMovie, postOwnerApprove, postOwnerDenied, postUnblockOwner, postUnblockUser, verifyTokenAdmin, viewOrder} from '../controllers/adminControllers.js'
+import { adminLogin, getAdminOwner, getAdminUser, getAllorders, getDailySails, getMonthlySails, getMovies, getStatus, getSuccessOrder, postAddMovies, postBlockOwner, postBlockUser, postDeleteMovie, postOwnerApprove, postOwnerDenied, postUnblockOwner, postUnblockUser, verifyTokenAdmin, viewOrder} from '../controllers/adminControllers.js'
 import { adminAuthication } from '../jwtAuth/generateJwt.js'
 
 
@@ -20,5 +20,8 @@ router.get('/getMovies',adminAuthication,getMovies)
 router.post('/deleteMovie',adminAuthication,postDeleteMovie)
 router.get('/get-allOrders',adminAuthication,getAllorders)
 router.get('/view-order/:id',adminAuthication,viewOrder)
-
+router.get('/get-status',adminAuthication,getStatus)
+router.get('/get-successOrder',adminAuthication,getSuccessOrder)
+router.get('/get-monthlySails',adminAuthication,getMonthlySails)
+router.get('/get-dailySails',adminAuthication,getDailySails)
 export default router

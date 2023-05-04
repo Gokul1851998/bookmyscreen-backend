@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance} from '../controllers/userControllers.js'
+import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance, postForgotOtp, postResetPassword, getWallet, getSearch, editProfile} from '../controllers/userControllers.js'
 import { userAuthication } from '../jwtAuth/generateJwt.js'
 
 
@@ -8,6 +8,7 @@ router.post('/getOtp',sendOtp)
 router.post('/signUp',verifyOtpAndSignUp)
 router.post('/signIn',signIn)
 router.post('/resendOtp',userResentOtp)
+router.post('/forgotOtp',postForgotOtp)
 router.get('/view-movies',getViewMovies)
 router.post('/get-dates',getDates)
 router.post('/get-seats',getSeats)
@@ -18,7 +19,11 @@ router.post('/user-order',userAuthication,userOrder)
 router.get('/get-order/:id',userAuthication,getOrder)
 router.get('/single-order/:id',userAuthication,getSingleorder)
 router.get('/cancel-order/:id',userAuthication,getOrderCancel)
-router.post('/get-balance',getBalance)
+router.post('/get-balance',userAuthication,getBalance)
+router.post('/get-wallet',userAuthication,getWallet)
+router.post('/edit-profile',userAuthication,editProfile)
 router.get('/get-verify/:id',getVerify)
+router.post('/reset-password',postResetPassword)
+router.get('/get-search/:id',getSearch)
 
 export default router 

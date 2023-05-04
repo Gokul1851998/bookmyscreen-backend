@@ -1,5 +1,5 @@
 import express from 'express'
-import { deteteScreen, getAppoval, getBookings, getCurrentOwner, getMovieName, getScreen, getSelectScreen, getShows, login, ownerOtp, postAddScreen, postAddShow, postDeleteShow, postEditScreen, postEditShow, resendOtp, signUp } from '../controllers/ownerControllers.js'
+import { deteteScreen, getAppoval, getBookings, getCurrentOwner, getDailySails, getMonthlySails, getMovieName, getScreen, getSelectScreen, getShows, getStatus, login, ownerOtp, postAddScreen, postAddShow, postDeleteShow, postEditScreen, postEditShow, resendOtp, signUp } from '../controllers/ownerControllers.js'
 import { ownerAuthication } from '../jwtAuth/generateJwt.js'
 
 const router = express.Router()
@@ -12,7 +12,7 @@ router.get('/get-approval/:id',getAppoval)
 router.get('/getCurrentOwner',ownerAuthication,getCurrentOwner)
 router.post('/add-screen',ownerAuthication,postAddScreen)
 router.get('/get-screen/:id',ownerAuthication,getScreen)
-router.post('/delete-screen',deteteScreen)
+router.post('/delete-screen',ownerAuthication,deteteScreen)
 router.post('/add-show',ownerAuthication,postAddShow)
 router.get('/get-movieName',ownerAuthication,getMovieName)
 router.get('/select-screen/:id',ownerAuthication,getSelectScreen)
@@ -21,6 +21,7 @@ router.post('/delete-show',ownerAuthication,postDeleteShow)
 router.post('/edit-screen',ownerAuthication,postEditScreen)
 router.post('/edit-show',ownerAuthication,postEditShow)
 router.get('/get-bookings/:id',ownerAuthication,getBookings) 
-
-
+router.post('/get-status',ownerAuthication,getStatus)
+router.post('/get-monthySails',ownerAuthication,getMonthlySails)
+router.post('/get-dailySails',ownerAuthication,getDailySails)
 export default router

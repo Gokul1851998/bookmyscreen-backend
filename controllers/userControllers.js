@@ -51,7 +51,7 @@ export const verifyOtpAndSignUp = (req, res) => {
         if (otp === otpVerify) {  
             
             bcrypt.hash(user.signPassword, 10).then((hash) => {
-                user.signPassword = hash
+            user.signPassword = hash
                 const newUser = new userModel(user)
                 newUser.save().then(() => {
                     response.status = true
@@ -63,6 +63,25 @@ export const verifyOtpAndSignUp = (req, res) => {
             res.status(200).json(response)
         }
     } catch (err) {
+        res.status(500)
+    }
+}
+
+export const postForgotOtp = async(req,res)=>{
+    try{
+      const otp = req.body.forgotOTP
+      if(otp === otpVerify){
+        res.send({
+            success:true,
+            message:'OTP verified',
+        })
+      }else{
+        res.send({
+            success:false,
+            message:'OTP not matching',
+        })
+      }
+    }catch (err) {
         res.status(500)
     }
 }
@@ -312,9 +331,11 @@ export const userOrder = async(req,res)=>{
        status
     })
     await newOrder.save();
+    const bookings = await orderModel.findOne({bookingId:bookingId})
     res.send({
         success:true,
-        message:'Payment success'
+        message:'Payment success',
+        data: bookings
     })
     }catch(err) {
         res.status(500)
@@ -323,8 +344,26 @@ export const userOrder = async(req,res)=>{
 
 export const getOrder = async(req,res)=>{
     try{
-        
-         const orders = await orderModel.find({userId:req.params.id}).sort({ createdAt: -1 })
+        const order = await orderModel.find({userId:req.params.id})
+        const currentDate = new Date();
+      
+        //   const nextDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+        currentDate.setUTCHours(0, 0, 0, 0); // set time to 00:00:00.000 UTC
+        const newDate = currentDate.toISOString()
+        order.forEach(async (ord) => {
+            if (new Date(newDate) > new Date(ord.date)) {
+              await orderModel.updateOne(
+                { _id: ord._id },
+                { $set: { paymentstatus: "Expired" } }
+              );
+            }else{
+                await orderModel.updateOne(
+                  { _id: ord._id },
+                  { $set: { paymentstatus: "Active" } }
+                );
+              }
+          });                                                                                                                                                                       
+         const orders = await orderModel.find({userId:req.params.id}).sort({date: -1 })
          if(orders){
             res.send({
                 success:true,
@@ -383,7 +422,7 @@ export const getOrderCancel = async(req,res)=>{
           } 
         }
       );
-    const orders = await orderModel.find({userId:orderId.userId})
+    const orders = await orderModel.find({userId:orderId.userId}).sort({date: -1 })
     res.send({
         success:true,
         message:'Your Order has been Canceled',
@@ -517,3 +556,97 @@ export const getBalance = async(req,res)=>{
     }
 }
 
+export const postResetPassword = async(req,res)=>{
+    try{
+        var {forgotEmail,forPassword1,forPassword2} = req.body.forgotData
+        if(forPassword1 === forPassword2){
+            const hash = await bcrypt.hash(forPassword1, 10);
+              const updatedUser = await userModel.findOneAndUpdate(
+        { signEmail: forgotEmail },
+        { $set: { signPassword: hash } }
+            );
+            if(updatedUser){
+            res.send({
+                success:true,
+                message:'Password changed'
+            })
+        }
+    }else{
+        res.send({
+            success:false,
+            message:'check not matching'
+        })
+    }
+    }catch(err) {
+        res.status(500)
+    }
+
+}
+
+export const getWallet = async(req,res)=>{
+    try{
+    const user = await userModel.findOne({_id:req.body._id})
+    if(user){
+        res.send({
+            success:true,
+            message:'Wallet',
+            data:user
+        }) 
+    }else{
+        res.send({
+            success:false,
+            message:'Something went wrong'
+        })
+    }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+export const getSearch = async(req,res)=>{
+    try{
+      const search = await movieModel.find({title: {$regex :req.params.id,$options: "i"  }})
+      if(search){
+        res.send({
+            success:true,
+            message:'Movies',
+            data:search
+        }) 
+      }else{
+        res.send({
+            success:false,
+            message:'Not found',
+        })
+      }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+export const editProfile = async(req,res)=>{
+    try{
+     const {user,editEmail,editName,editPhone} = req.body
+    if(user){
+     await userModel.findOneAndUpdate({_id:user._id},
+        {$set:{
+            signName:editName,
+            signEmail:editEmail,
+            signPhone:editPhone
+        }}
+        )
+     const newUser = await userModel.findOne({_id:user._id})
+     res.send({
+        success:true,
+        message:'User profile has been edited',
+        data:newUser
+    })
+    }else{
+        res.send({
+            success:false,
+            message:'Something went wrong'
+        })
+    }
+    }catch(err) {
+        res.status(500)
+    }
+}

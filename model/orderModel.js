@@ -67,6 +67,10 @@ const orderSchema = new Schema({
     },
     image:{
         type:String         
+    },
+    paymentstatus:{
+        type:String,
+        default:'Active'
     }
   
 },{timestamps:true})
