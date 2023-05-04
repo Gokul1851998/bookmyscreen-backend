@@ -529,6 +529,11 @@ export const getDailySails = async(req,res)=>{
                 }
               }
           ])
+          if(daily.length){
+            var total = daily[0].total
+          }else{
+            var total=0
+          }
           const users = await userModel.find()
           const userCount = users.length
           const owners = await ownerModel.find()
@@ -542,7 +547,7 @@ export const getDailySails = async(req,res)=>{
             res.send({
                 success:true,
                 message:'Daily sails',
-                data:{daily,userCount,ownerCount,expiredCount,activeCount,movieCount}
+                data:{total,userCount,ownerCount,expiredCount,activeCount,movieCount}
               })
         
           
