@@ -11,6 +11,7 @@ import movieModel from "../model/movieModel.js";
 import showModel from "../model/showModel.js";
 import moment from "moment";
 import orderModel from "../model/orderModel.js";
+import userModel from "../model/userModel.js";
 
 export let otpVerify
 export const ownerOtp = (req, res) => {
@@ -623,6 +624,29 @@ export const getDailySails = async(req,res)=>{
             data:{total,expiredCount,activeCount,screenCount,showCount,orderCount}
           })
     }catch(error) {
+        return error.message
+     }
+}
+
+export const getOwnerUser = async(req,res)=>{
+  try{
+    const order  = await orderModel.find({ownerId:req.body._id,paymentstatus:'Active'})
+    const user = order.map((item) => item.userId);
+    const users = await userModel.find({ _id: { $in: user } });
+    const uniq = [...new Set(users)];
+    if(uniq){
+      res.send({
+          success:true,
+          message:'Chat list',
+          data:uniq
+      })
+  }else{
+      res.send({
+          success:false,
+          message:'Somthing went wrong',
+      }) 
+  }
+  }catch(error) {
         return error.message
      }
 }

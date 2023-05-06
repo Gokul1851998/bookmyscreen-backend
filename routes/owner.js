@@ -1,5 +1,5 @@
 import express from 'express'
-import { deteteScreen, getAppoval, getBookings, getCurrentOwner, getDailySails, getMonthlySails, getMovieName, getScreen, getSelectScreen, getShows, getStatus, login, ownerOtp, postAddScreen, postAddShow, postDeleteShow, postEditScreen, postEditShow, resendOtp, signUp } from '../controllers/ownerControllers.js'
+import { deteteScreen, getAppoval, getBookings, getCurrentOwner, getDailySails, getMonthlySails, getMovieName, getOwnerUser, getScreen, getSelectScreen, getShows, getStatus, login, ownerOtp, postAddScreen, postAddShow, postDeleteShow, postEditScreen, postEditShow, resendOtp, signUp } from '../controllers/ownerControllers.js'
 import { ownerAuthication } from '../jwtAuth/generateJwt.js'
 
 const router = express.Router()
@@ -24,4 +24,5 @@ router.get('/get-bookings/:id',ownerAuthication,getBookings)
 router.post('/get-status',ownerAuthication,getStatus)
 router.post('/get-monthySails',ownerAuthication,getMonthlySails)
 router.post('/get-dailySails',ownerAuthication,getDailySails)
+router.post('/get-OwnerUser',ownerAuthication,getOwnerUser)
 export default router

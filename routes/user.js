@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance, postForgotOtp, postResetPassword, getWallet, getSearch, editProfile} from '../controllers/userControllers.js'
+import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance, postForgotOtp, postResetPassword, getWallet, getSearch, editProfile, getUserOwner} from '../controllers/userControllers.js'
 import { userAuthication } from '../jwtAuth/generateJwt.js'
 
 
@@ -22,6 +22,7 @@ router.get('/cancel-order/:id',userAuthication,getOrderCancel)
 router.post('/get-balance',userAuthication,getBalance)
 router.post('/get-wallet',userAuthication,getWallet)
 router.post('/edit-profile',userAuthication,editProfile)
+router.post('/get-userOwner',userAuthication,getUserOwner)
 router.get('/get-verify/:id',getVerify)
 router.post('/reset-password',postResetPassword)
 router.get('/get-search/:id',getSearch)

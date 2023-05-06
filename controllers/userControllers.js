@@ -650,3 +650,26 @@ export const editProfile = async(req,res)=>{
         res.status(500)
     }
 }
+
+export const getUserOwner = async(req,res)=>{
+    try{
+    const order = await orderModel.find({userId:req.body._id,paymentstatus:'Active'})
+    const ownerIds = order.map((item) => item.ownerId);
+    const owners = await ownerModel.find({ _id: { $in: ownerIds } });
+    const uniq = [...new Set(owners)];
+    if(uniq){
+        res.send({
+            success:true,
+            message:'Chat list',
+            data:uniq
+        })
+    }else{
+        res.send({
+            success:false,
+            message:'Somthing went wrong',
+        }) 
+    }
+    }catch(err) {
+        res.status(500)
+    }
+}
