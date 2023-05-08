@@ -332,11 +332,19 @@ export const userOrder = async(req,res)=>{
     })
     await newOrder.save();
     const bookings = await orderModel.findOne({bookingId:bookingId})
-    res.send({
-        success:true,
-        message:'Payment success',
-        data: bookings
-    })
+   
+    if(bookings){
+        res.send({
+                success:true,
+                data:bookings
+            })
+    }else{
+        res.send({
+            success:false,
+            message:'Payment success',
+        })
+    }
+    
     }catch(err) {
         res.status(500)
     }
