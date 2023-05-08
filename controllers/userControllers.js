@@ -344,7 +344,7 @@ export const userOrder = async(req,res)=>{
 
 export const getOrder = async(req,res)=>{
     try{
-        const order = await orderModel.find({userId:req.params.id})
+        const order = await orderModel.find({userId:req.body._id})
         const currentDate = new Date();
       
         //   const nextDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
@@ -363,12 +363,13 @@ export const getOrder = async(req,res)=>{
                 );
               }
           });                                                                                                                                                                       
-         const orders = await orderModel.find({userId:req.params.id}).sort({date: -1 })
-         if(orders){
+         const activeOrders = await orderModel.find({userId:req.body._id,paymentstatus:'Active'}).sort({date: -1 })
+         const expireOrders = await orderModel.find({userId:req.body._id,paymentstatus:'Expired'}).sort({date: -1 }).limit(3)
+         if(activeOrders ||expireOrders ){
             res.send({
                 success:true,
                 message:'Your Orders',
-                data:orders
+                data:{activeOrders,expireOrders}
             })
          }else{
             res.send({
@@ -422,7 +423,7 @@ export const getOrderCancel = async(req,res)=>{
           } 
         }
       );
-    const orders = await orderModel.find({userId:orderId.userId}).sort({date: -1 })
+    const orders = await orderModel.find({userId:orderId.userId,paymentstatus:'Active'}).sort({date: -1 })
     res.send({
         success:true,
         message:'Your Order has been Canceled',
