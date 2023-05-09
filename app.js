@@ -21,8 +21,8 @@ app.use(express.urlencoded({limit:"50mb",extended:true,parameterLimit:50000}))
 app.use(logger('dev'))
 connection()
 app.use(cors({
-    origin:'https://bookmyscreen.netlify.app',
-    credentials:true,
+    // origin:'https://bookmyscreen.netlify.app',
+    // credentials:true,
 })) 
 
 
@@ -38,8 +38,8 @@ const server = app.listen(3000,()=>{
 
 const io = new Server(server, {
     cors: {
-      origin: "https://bookmyscreen.netlify.app",
-      credentials: true,
+    //   origin: "https://bookmyscreen.netlify.app",
+    //   credentials: true,
     },
   });
 
