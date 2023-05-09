@@ -26,9 +26,6 @@ app.use(
         credentials: true,
       })
 ) 
-
-
- 
 app.use('/admin',adminRouter)
 app.use('/',userRouter)
 app.use('/owner',ownerRouter)
