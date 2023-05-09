@@ -38,7 +38,7 @@ const server = app.listen(3000,()=>{
 
 const io = new Server(server, {
     cors: {
-      origin: "https://bookmyscreen.netlify.app/",
+      origin: "https://bookmyscreen.netlify.app",
       credentials: true,
     },
   });
