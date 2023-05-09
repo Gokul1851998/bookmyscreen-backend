@@ -33,7 +33,6 @@ export const adminLogin =(req, res)=>{
 export const verifyTokenAdmin = async(req, res, next)=>{
     try{
        const adminId =res.locals.Id
-       console.log(token);
        const admin = await adminModel.findOne({_id:adminId})
        if(admin){
         res.status(200).json({ token: true })

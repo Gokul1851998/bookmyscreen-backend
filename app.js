@@ -22,10 +22,8 @@ app.use(logger('dev'))
 connection()
 app.use(
     cors({
-        origin: ["https://bookmyscreen.netlify.app"],
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        origin:'*',
         credentials: true,
-        allowedHeaders: ["Content-type", "Access", "Authorization"],
       })
 ) 
 
@@ -42,7 +40,7 @@ const server = app.listen(3000,()=>{
 
 const io = new Server(server, {
     cors: {
-      origin: "https://bookmyscreen.netlify.app",
+      origin: "*",
       credentials: true,
     },
   });

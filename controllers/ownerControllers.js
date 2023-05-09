@@ -71,7 +71,6 @@ export const resendOtp = (req, res) => {
     try {
         let response = {}
         let email = req.body.email
-        console.log(email);
         otpGenerator()
             .then((otp) => {
                 otpVerify = otp
@@ -94,7 +93,6 @@ export const resendOtp = (req, res) => {
 export const login=async(req,res)=>{
     try{
         let response ={}
-        console.log(req.body);
         let {email,password} = req.body
         const owner =await ownerModel.findOne({Email:email})
       
