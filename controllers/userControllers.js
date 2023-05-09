@@ -332,7 +332,6 @@ export const userOrder = async(req,res)=>{
     })
     await newOrder.save();
     const bookings = await orderModel.findOne({bookingId:bookingId})
-   
     if(bookings){
         res.send({
                 success:true,
@@ -614,7 +613,11 @@ export const getWallet = async(req,res)=>{
 
 export const getSearch = async(req,res)=>{
     try{
-      const search = await movieModel.find({title: {$regex :req.params.id,$options: "i"  }})
+        const search = []
+      const user = await movieModel.find({title: {$regex :req.params.id,$options: "i"  }})
+      const theatre = await ownerModel.find({Location: {$regex :req.params.id,$options: "i"  }})
+      search.push(...user, ...theatre);
+     
       if(search){
         res.send({
             success:true,
@@ -678,6 +681,49 @@ export const getUserOwner = async(req,res)=>{
             message:'Somthing went wrong',
         }) 
     }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+export const getLocation = async(req,res)=>{
+    try{
+     const location = req.body.place
+     const theatre = await ownerModel.find({Location:location})
+     if(theatre){
+        res.send({
+            success:true,
+            message:'Theatre found',
+            data:theatre
+        })
+     }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+export const getTheatreShows = async(req,res)=>{
+    try{
+       const owner = await ownerModel.findOne({_id:req.params.id})
+       const newdate = new Date().toISOString().slice(0, 10) + "T00:00:00.000Z";
+       const shows = await showModel.find({
+        $and: [
+          { ownerId: req.params.id },
+          { "dates.date": { $eq: new Date(newdate) } }
+        ]
+      });
+          if(shows){
+        res.send({
+            success:true,
+            message:'Theatre found',
+            data:{owner,shows}
+        })
+       }else{
+        res.send({
+            success:false,
+            message:'Shows not found',
+        })
+       }
     }catch(err) {
         res.status(500)
     }

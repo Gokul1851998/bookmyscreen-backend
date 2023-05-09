@@ -350,7 +350,11 @@ export const postDeleteMovie = async(req,res)=>{
 
 export const getAllorders = async(req,res)=>{
     try{
-        const orders = await orderModel.find().sort({ createdAt: -1 })
+        const orders = await orderModel
+  .find()
+  .sort({ createdAt: -1 })
+//   .select('-OwnerId -userId');
+        
         if(orders){
             res.send({
                 success:true,
