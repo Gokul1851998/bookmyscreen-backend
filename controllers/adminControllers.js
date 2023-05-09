@@ -449,14 +449,14 @@ for (let month = 1; month <= 12; month++){
     end = new Date(`${year}-${(month + 1).toString().padStart(2, '0')}-01`);
   }
   
-  const promise = orderModel.aggregate([
+  const promise = orderModel.aggregate([ 
     {
         $match: {
           date: {
             $gte: start,
             $lt: end
           },
-          status: "Booked" // Only match orders with status "Booked"
+          status: "Booked" // Only match orders with status 
         }
       },
       {
