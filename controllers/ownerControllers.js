@@ -434,7 +434,7 @@ export const postEditShow = async(req,res)=>{
 
 export const getBookings = async(req,res)=>{
     try{
-     const ownerOrders = await orderModel.find({ownerId:req.params.id}).sort({ createdAt: -1 })
+     const ownerOrders = await orderModel.find({ownerId:req.params.id},{userId:0,ownerId:0}).sort({ createdAt: -1 })
      if(ownerOrders){
         res.send({
             success:true,
