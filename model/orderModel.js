@@ -65,6 +65,9 @@ const orderSchema = new Schema({
     language:{
         type:String
     },
+    paymentId:{
+       type:String
+    },
     image:{
         type:String         
     },

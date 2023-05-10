@@ -249,28 +249,79 @@ export const getcurrentuser = async(req,res)=>{
 
 export const getPayment = async(req,res)=>{
     try{
-        const price = parseInt(req.params.id)
-        if(price){
-         const instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_SECRET
-         })
-         var options = {
-            amount: price *  100,
+        const {fee,subtotal,total,image,user,language} = req.body
+        const {selectedSeats,date}=req.body.details
+        const userId = user.user._id
+        const userName = user.user.signName
+        const status ='Booked'
+        const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
+        const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
+     
+        const hash = crypto.createHash('sha256')
+        .update(movieName + userId + selectedSeats + date)
+        .digest('hex');
+      const randomNumber = Math.floor(Math.random() * 10) + 1;
+        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0').toUpperCase();
+
+      
+        const show = await showModel.findOneAndUpdate(
+          {
+            _id: _id,
+            "dates.date": { $eq: new Date(newdate) },
+            "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
+          },
+          {
+            $set: {
+              "dates.$[date].seats.$[seat].seatStatus": "sold"
+            }
+          },
+          {
+            arrayFilters: [
+              { "date.date": { $eq: new Date(newdate) } },
+              { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+            ]
+          }
+        );
+        show.save()
+        const newOrder = new orderModel({
+          userId,
+         ownerId,
+         movieName,
+         ownerName,
+         location,
+         showTime,
+         date,
+         selectedSeats,
+         subtotal,
+         fee,
+         total,
+         screen,
+         bookingId,
+         image,
+         language,
+         userName,
+         status
+      })
+      await newOrder.save();
+      await orderModel.findOne({bookingId:bookingId}).then((order)=>{
+       const orderId = order._id
+        if(order){
+           const instance = new Razorpay({key_id:process.env.RAZORPAY_KEY_ID, key_secret:process.env.RAZORPAY_SECRET})
+           var options={
+            amount:order.total * 100,
             currency: 'INR'
-        }
-       
-        instance.orders.create(options, function (err, order) {
-            if (err) {
-                console.log(err);
+           }
+           instance.orders.create(options,function(err,order){
+            if(err){
                 res.status(500)
             }
-            res.send({
+                res.send({
                 success:true,
-                data:order
+                data:{order,orderId}
             })
-        })
-    }
+           })
+        }
+      })
     }catch(err) {
         res.status(500)
     }
@@ -278,72 +329,14 @@ export const getPayment = async(req,res)=>{
 
 export const userOrder = async(req,res)=>{
     try{
-      const {fee,subtotal,total,image,user,language} = req.body
-      const {selectedSeats,date}=req.body.details
-      const userId = user.user._id
-      const userName = user.user.signName
-      const status ='Booked'
-      const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
-      const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
-   
-      const hash = crypto.createHash('sha256')
-      .update(movieName + userId + selectedSeats + date)
-      .digest('hex');
-       const randomNumber = Math.floor(Math.random() * 10) + 1;
-       const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0');
-    
-      const show = await showModel.findOneAndUpdate(
-        {
-          _id: _id,
-          "dates.date": { $eq: new Date(newdate) },
-          "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-        },
-        {
-          $set: {
-            "dates.$[date].seats.$[seat].seatStatus": "sold"
-          }
-        },
-        {
-          arrayFilters: [
-            { "date.date": { $eq: new Date(newdate) } },
-            { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-          ]
-        }
-      );
-      show.save()
-      const newOrder = new orderModel({
-        userId,
-       ownerId,
-       movieName,
-       ownerName,
-       location,
-       showTime,
-       date,
-       selectedSeats,
-       subtotal,
-       fee,
-       total,
-       screen,
-       bookingId,
-       image,
-       language,
-       userName,
-       status
-    })
-    await newOrder.save();
-    const bookings = await orderModel.findOne({bookingId:bookingId})
+    const bookings = await orderModel.findOne({_id:req.body.bookingId})
     if(bookings){
         res.send({
-                success:true,
-                data:bookings
-            })
-    }else{
-        res.send({
-            success:false,
-            message:'Payment success',
+            success:true,
+            data:bookings
         })
     }
-    
+   
     }catch(err) {
         res.status(500)
     }
@@ -484,10 +477,11 @@ export const getBalance = async(req,res)=>{
       const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
    
       const hash = crypto.createHash('sha256')
-      .update(movieName + userId + selectedSeats + date)
-      .digest('hex');
-       const randomNumber = Math.floor(Math.random() * 10) + 1;
-        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0');
+        .update(movieName + userId + selectedSeats + date)
+        .digest('hex');
+        const randomNumber = Math.floor(Math.random() * 10) + 1;
+        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0').toUpperCase();
+
         const userfind = await userModel.findOne({_id:user._id})
         if(userfind){
             if(userfind.wallet >= total){
