@@ -14,7 +14,7 @@ dotenv.config()
 const app = express();
 
 const corsOptions = {
-    origin: ["https://master.d1qij60nvo1j8a.amplifyapp.com"],
+    origin: ["https://bookmyscreen.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: "Content-Type,Authorization",
     optionsSuccessStatus: 200,
@@ -35,7 +35,7 @@ app.use('/',userRouter)
 app.use('/owner',ownerRouter)
 app.use('/message',messageRouter)
 
-const server = app.listen(3000,()=>{
+const server = app.listen(2000,()=>{
     console.log('server connected to port 3000');
 })
 
