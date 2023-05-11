@@ -304,7 +304,7 @@ export const getPayment = async(req,res)=>{
       })
       await newOrder.save();
       await orderModel.findOne({bookingId:bookingId}).then((order)=>{
-       const orderId = order._id
+       const bookings = order
         if(order){
            const instance = new Razorpay({key_id:process.env.RAZORPAY_KEY_ID, key_secret:process.env.RAZORPAY_SECRET})
            var options={
@@ -317,7 +317,7 @@ export const getPayment = async(req,res)=>{
             }
                 res.send({
                 success:true,
-                data:{order,orderId}
+                data:{order,bookings}
             })
            })
         }
