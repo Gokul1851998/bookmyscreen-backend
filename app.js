@@ -14,7 +14,7 @@ dotenv.config()
 const app = express();
 
 const corsOptions = {
-    origin: ["https://bookmyscreen.netlify.app"],
+    origin: ["https://master.d1qij60nvo1j8a.amplifyapp.com"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: "Content-Type,Authorization",
     optionsSuccessStatus: 200,
