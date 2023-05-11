@@ -22,7 +22,9 @@ app.use(logger('dev'))
 connection()
 app.use(
     cors({
-        origin:'*',
+        origin:['https://www.echo-cart.shop'],
+        methods: [" GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: "*",
         credentials: true,
       })
 ) 

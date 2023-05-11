@@ -262,7 +262,7 @@ export const getPayment = async(req,res)=>{
         .digest('hex');
       const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0').toUpperCase();
-
+           
       
         const show = await showModel.findOneAndUpdate(
           {
