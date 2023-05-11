@@ -22,7 +22,7 @@ app.use(logger('dev'))
 connection()
 app.use(
     cors({
-        origin:['https://www.echo-cart.shop'],
+        origin:['https://bookmyscreen.netlify.app'],
         methods: [" GET", "POST", "PUT", "DELETE"],
         allowedHeaders: "*",
         credentials: true,
