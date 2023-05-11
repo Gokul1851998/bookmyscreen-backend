@@ -22,7 +22,7 @@ app.use(logger('dev'))
 connection()
 app.use(
     cors({
-        origin:['https://bookmyscreen.netlify.app'],
+        origin:["https://bookmyscreen.onrender.com"],
         methods:['GET','POST','PUT','DELETE','PATCH'],
         credentials:true,
     })
