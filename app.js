@@ -1,4 +1,5 @@
-import express, { application } from 'express'
+import express from 'express'
+import cors from 'cors'
 import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
@@ -7,7 +8,7 @@ import userRouter from './routes/user.js'
 import adminRouter from './routes/admin.js'
 import ownerRouter from './routes/owner.js'
 import messageRouter from './routes/message.js'
-import cors from 'cors'
+
 import dotenv from 'dotenv'
 import { Server } from 'socket.io'
 dotenv.config() 
@@ -22,7 +23,6 @@ app.use(logger('dev'))
 connection()
 app.use(cors({ 
     origin:'https://bookmyscreen.netlify.app',
-    // origin:'http://localhost:8000',
     method:['POST', 'GET', 'PUT', 'DELETE','PATCH'],
     credentials: true,
     allowedHeaders: [
@@ -36,13 +36,13 @@ app.use('/',userRouter)
 app.use('/owner',ownerRouter)
 app.use('/message',messageRouter)
 
-const server = app.listen(2000,()=>{
+const server = app.listen(8000,()=>{
     console.log('server connected to port 3000');
 })
 
 const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: 'https://bookmyscreen.netlify.app',
       credentials: true,
     },
   });
