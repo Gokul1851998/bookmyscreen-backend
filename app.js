@@ -21,7 +21,16 @@ app.use(express.urlencoded({limit:"50mb",extended:true,parameterLimit:50000}))
 app.use(logger('dev'))
 connection()
 app.use(
-    cors()
+    cors({
+        origin:['https://bookmyscreen.netlify.app'],
+        methods:['GET','POST','PUT','DELETE','PATCH'],
+        credentials:true,
+        allowedHeaders:[
+            'Content-type',
+            'Access',
+            'Authorization'
+        ]
+    })
 ) 
 app.use('/admin',adminRouter)
 app.use('/',userRouter)
