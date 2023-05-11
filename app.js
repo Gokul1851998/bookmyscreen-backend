@@ -11,7 +11,16 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { Server } from 'socket.io'
 dotenv.config() 
-const app = express()
+const app = express();
+
+const corsOptions = {
+    origin: ["https://bookmyscreen.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: "Content-Type,Authorization",
+    optionsSuccessStatus: 200,
+  };
+  
+app.use(cors(corsOptions));
  
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended:true,limit:"50mb"}))
@@ -20,14 +29,7 @@ app.use(express.json({limit:"50mb"}))
 app.use(express.urlencoded({limit:"50mb",extended:true,parameterLimit:50000}))
 app.use(logger('dev'))
 connection()
-app.use(
-    cors({
-        origin:['https://bookmyscreen.netlify.app'],
-        methods: [" GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: "*",
-        credentials: true,
-      })
-) 
+
 app.use('/admin',adminRouter)
 app.use('/',userRouter)
 app.use('/owner',ownerRouter)
