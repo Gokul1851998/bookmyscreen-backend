@@ -249,6 +249,7 @@ export const getcurrentuser = async(req,res)=>{
 
 export const getPayment = async(req,res)=>{
     try{
+        console.log('here');
         const {fee,subtotal,total,image,user,language} = req.body
         const {selectedSeats,date}=req.body.details
         const userId = user.user._id
@@ -304,6 +305,7 @@ export const getPayment = async(req,res)=>{
       })
       await newOrder.save();
       await orderModel.findOne({bookingId:bookingId}).then((order)=>{
+        console.log(order);
        const bookings = order
         if(order){
            const instance = new Razorpay({key_id:process.env.RAZORPAY_KEY_ID, key_secret:process.env.RAZORPAY_SECRET})
