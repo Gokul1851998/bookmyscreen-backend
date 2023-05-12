@@ -262,7 +262,7 @@ export const getPayment = async(req,res)=>{
         .update(movieName + userId + selectedSeats + date)
         .digest('hex');
       const randomNumber = Math.floor(Math.random() * 10) + 1;
-        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0').toUpperCase();
+        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
            
       
         const show = await showModel.findOneAndUpdate(
@@ -469,96 +469,92 @@ export const getVerify = async(req,res)=>{
 
 export const getBalance = async(req,res)=>{
     try{
-    //     const user = req.body.user.user
-    //     const {fee,subtotal,total,image,language} = req.body
-    //     const {selectedSeats,date}=req.body.details
-    //     const status ='Booked'
-    //     const userId = user._id
-    //     const userName =user.signName
-    //     const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
-    //   const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
+        const user = req.body.user.user
+        const {fee,subtotal,total,image,language} = req.body
+        const {selectedSeats,date}=req.body.details
+        const status ='Booked'
+        const userId = user._id
+        const userName =user.signName
+        const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
+      const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
    
-    //   const hash = crypto.createHash('sha256')
-    //     .update(movieName + userId + selectedSeats + date)
-    //     .digest('hex');
-    //     const randomNumber = Math.floor(Math.random() * 10) + 1;
-    //     const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0').toUpperCase();
+      const hash = crypto.createHash('sha256')
+        .update(movieName + userId + selectedSeats + date)
+        .digest('hex');
+        const randomNumber = Math.floor(Math.random() * 10) + 1;
+        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
 
-    //     const userfind = await userModel.findOne({_id:user._id})
-    //     if(userfind){
-    //         if(userfind.wallet >= total){
-    //             const show = await showModel.findOneAndUpdate(
-    //                 {
-    //                   _id: _id,
-    //                   "dates.date": { $eq: new Date(newdate) },
-    //                   "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-    //                 },
-    //                 {
-    //                   $set: {
-    //                     "dates.$[date].seats.$[seat].seatStatus": "sold"
-    //                   }
-    //                 },
-    //                 {
-    //                   arrayFilters: [
-    //                     { "date.date": { $eq: new Date(newdate) } },
-    //                     { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-    //                   ]
-    //                 }
-    //               );
-    //               show.save()
-    //               const newOrder = new orderModel({
-    //                 userId,
-    //                ownerId,
-    //                movieName,
-    //                ownerName,
-    //                location,
-    //                showTime,
-    //                date,
-    //                selectedSeats,
-    //                subtotal,
-    //                fee,
-    //                total,
-    //                screen,
-    //                bookingId,
-    //                image,
-    //                language,
-    //                userName,
-    //                status
-    //             })
-    //             await newOrder.save();
-    //             await userModel.findOneAndUpdate({_id:user._id},
-    //                 {
-    //                     $inc: {wallet: -total},
-    //                     $push: {
-    //                       transaction: {
-    //                         $each: [{ amount: -total, date: new Date() }],
-    //                         $position: 0,
-    //                         $slice: 4
-    //                       }
-    //                     } 
-    //                   });
-    //                 const bookings = await orderModel.findOne({bookingId:bookingId})
-    //                   res.send({
-    //                     success:true,
-    //                     message:'Payment successfull',
-    //                     data: bookings
-    //                 })
-    //          }else{
-    //             res.send({
-    //                 success:false,
-    //                 message:'Insufficient Balance'
-    //             })
-    //          }
-    //     }else{
-    //         res.send({
-    //             success:false,
-    //             message:'Something went wrong'
-    //         })  
-    //     }
-    res.send({
-                        success:false,
-                        message:'Insufficient Balance'
+        const userfind = await userModel.findOne({_id:user._id})
+        if(userfind){
+            if(userfind.wallet >= total){
+                const show = await showModel.findOneAndUpdate(
+                    {
+                      _id: _id,
+                      "dates.date": { $eq: new Date(newdate) },
+                      "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
+                    },
+                    {
+                      $set: {
+                        "dates.$[date].seats.$[seat].seatStatus": "sold"
+                      }
+                    },
+                    {
+                      arrayFilters: [
+                        { "date.date": { $eq: new Date(newdate) } },
+                        { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+                      ]
+                    }
+                  );
+                  show.save()
+                  const newOrder = new orderModel({
+                    userId,
+                   ownerId,
+                   movieName,
+                   ownerName,
+                   location,
+                   showTime,
+                   date,
+                   selectedSeats,
+                   subtotal,
+                   fee,
+                   total,
+                   screen,
+                   bookingId,
+                   image,
+                   language,
+                   userName,
+                   status
+                })
+                await newOrder.save();
+                await userModel.findOneAndUpdate({_id:user._id},
+                    {
+                        $inc: {wallet: -total},
+                        $push: {
+                          transaction: {
+                            $each: [{ amount: -total, date: new Date() }],
+                            $position: 0,
+                            $slice: 4
+                          }
+                        } 
+                      });
+                    const bookings = await orderModel.findOne({bookingId:bookingId})
+                      res.send({
+                        success:true,
+                        message:'Payment successfull',
+                        data: bookings
                     })
+             }else{
+                res.send({
+                    success:false,
+                    message:'Insufficient Balance'
+                })
+             }
+        }else{
+            res.send({
+                success:false,
+                message:'Something went wrong'
+            })  
+        }
     }catch(err) {
         res.status(500)
     }
