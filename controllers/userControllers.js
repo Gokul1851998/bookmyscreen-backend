@@ -283,7 +283,7 @@ export const getPayment = async(req,res)=>{
             ]
           }
         );
-        show.save()
+        
         const newOrder = new orderModel({
           userId,
          ownerId,
@@ -308,7 +308,7 @@ export const getPayment = async(req,res)=>{
       if(bookings){
            const instance = new Razorpay({key_id:process.env.RAZORPAY_KEY_ID, key_secret:process.env.RAZORPAY_SECRET})
            var options={
-            amount:order.total * 100,
+            amount:bookings.total * 100,
             currency: 'INR'
            }
            instance.orders.create(options,function(err,order){
@@ -503,7 +503,7 @@ export const getBalance = async(req,res)=>{
                       ]
                     }
                   );
-                  show.save()
+             
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -536,11 +536,13 @@ export const getBalance = async(req,res)=>{
                         } 
                       });
                     const bookings = await orderModel.findOne({bookingId:bookingId})
-                      res.send({
-                        success:true,
-                        message:'Payment successfull',
-                        data: bookings
-                    })
+                     if(bookings){
+                        res.send({
+                            success:true,
+                            message:'Payment successfull',
+                            data: bookings
+                        })
+                     }
              }else{
                 res.send({
                     success:false,
