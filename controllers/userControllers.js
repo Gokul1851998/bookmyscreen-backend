@@ -488,62 +488,47 @@ export const getBalance = async(req,res)=>{
                 await showModel.aggregate([
                     {
                       $match: {
-                        _id,
-                        "dates.date": new Date(newdate),
+                        _id: _id,
+                        "dates.date": { $eq: new Date(newdate) },
+                        "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
+                      }
+                    },
+                    {
+                      $unwind: "$dates"
+                    },
+                    {
+                      $unwind: "$dates.seats"
+                    },
+                    {
+                      $match: {
+                        "dates.date": { $eq: new Date(newdate) },
                         "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
                       }
                     },
                     {
                       $set: {
-                        dates: {
-                          $map: {
-                            input: "$dates",
-                            as: "date",
-                            in: {
-                              $cond: [
-                                { $eq: ["$$date.date", new Date(newdate)] },
-                                {
-                                  $mergeObjects: [
-                                    "$$date",
-                                    {
-                                      seats: {
-                                        $map: {
-                                          input: "$$date.seats",
-                                          as: "seat",
-                                          in: {
-                                            $cond: [
-                                              { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
-                                              {
-                                                $mergeObjects: [
-                                                  "$$seat",
-                                                  { seatStatus: "sold" }
-                                                ]
-                                              },
-                                              "$$seat"
-                                            ]
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ]
-                                },
-                                "$$date"
-                              ]
-                            }
-                          }
-                        }
+                        "dates.seats.seatStatus": "sold"
                       }
                     },
                     {
-                      $unset: ["_id", "__v"]
-                    },
-                    {
-                      $replaceRoot: {
-                        newRoot: "$dates"
+                      $set: {
+                        "dates.seats": {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: "$dates.seats",
+                                as: "seat",
+                                cond: {
+                                  $in: ["$$seat.id", selectedSeats.map(seat => seat.id)]
+                                }
+                              }
+                            },
+                            0
+                          ]
+                        }
                       }
                     }
                   ]);
-                  
                   
                   console.log('hree');
                   const newOrder = new orderModel({
