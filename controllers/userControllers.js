@@ -146,7 +146,7 @@ export const getViewMovies = async(req,res) =>{
         const movies = await movieModel.aggregate([
             { $match: { 'movieId': { $exists: true } } },
             { $project: { _id: 0, movieId: 1, director: 1 } }
-          ])
+          ]).sort({createdAt:-1})
           
           if(movies){
             res.send({
@@ -475,20 +475,20 @@ export const getBalance = async(req,res)=>{
         const userName =user.signName
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
       const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
+   
       const hash = crypto.createHash('sha256')
         .update(movieName + userId + selectedSeats + date)
         .digest('hex');
         const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
+
         const userfind = await userModel.findOne({_id:user._id})
-        
-            
+        if(userfind){
             if(userfind.wallet >= total){
-                
-                await showModel.updateOne(
+                const show = await showModel.findOneAndUpdate(
                     {
                       _id: _id,
-                      "dates.date": new Date(newdate),
+                      "dates.date": { $eq: new Date(newdate) },
                       "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
                     },
                     {
@@ -498,13 +498,12 @@ export const getBalance = async(req,res)=>{
                     },
                     {
                       arrayFilters: [
-                        { "date.date": new Date(newdate) },
+                        { "date.date": { $eq: new Date(newdate) } },
                         { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
                       ]
                     }
                   );
-                  
-            
+             
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -536,9 +535,7 @@ export const getBalance = async(req,res)=>{
                           }
                         } 
                       });
-                      console.log(bookingId);
                     const bookings = await orderModel.findOne({bookingId:bookingId})
-                    console.log(bookings);
                      if(bookings){
                         res.send({
                             success:true,
@@ -552,7 +549,12 @@ export const getBalance = async(req,res)=>{
                     message:'Insufficient Balance'
                 })
              }
-       
+        }else{
+            res.send({
+                success:false,
+                message:'Something went wrong'
+            })  
+        }
     }catch(err) {
         res.status(500)
     }

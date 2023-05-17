@@ -18,7 +18,10 @@ const movieSchema = new Schema({
         type:String
     }
     
-})
+},
+{
+    timestamps: true,
+  })
 
 const movieModel = mongoose.model('movie',movieSchema)
 export default movieModel

@@ -265,7 +265,7 @@ export const postUnblockOwner = async(req,res)=>{
 
 export const getMovies= async(req,res)=>{
     try{
-        const movies = await movieModel.find({})
+        const movies = await movieModel.find({}).sort({createdAt:-1})
         if(movies){
             res.send({
                 success:true,
