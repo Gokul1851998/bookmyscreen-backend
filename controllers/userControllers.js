@@ -481,28 +481,79 @@ export const getBalance = async(req,res)=>{
         .digest('hex');
         const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
+
         const userfind = await userModel.findOne({_id:user._id})
+        if(userfind){
             if(userfind.wallet >= total){
-                await showModel.updateOne(
+                await showModel.aggregate([
                     {
-                      _id,
-                      "dates.date": new Date(newdate),
-                      "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-                    },
-                    {
-                      $set: {
-                        "dates.$[date].seats.$[seat].seatStatus": "sold"
+                      $match: {
+                        _id,
+                        "dates.date": new Date(newdate),
+                        "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
                       }
                     },
                     {
-                      arrayFilters: [
-                        { "date.date": new Date(newdate) },
-                        { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-                      ]
+                      $addFields: {
+                        dates: {
+                          $map: {
+                            input: "$dates",
+                            as: "date",
+                            in: {
+                              $cond: [
+                                { $eq: ["$$date.date", new Date(newdate)] },
+                                {
+                                  $mergeObjects: [
+                                    "$$date",
+                                    {
+                                      seats: {
+                                        $map: {
+                                          input: "$$date.seats",
+                                          as: "seat",
+                                          in: {
+                                            $cond: [
+                                              { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
+                                              {
+                                                $mergeObjects: [
+                                                  "$$seat",
+                                                  { seatStatus: "sold" }
+                                                ]
+                                              },
+                                              "$$seat"
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                },
+                                "$$date"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        _id: 1,
+                        dates: 1
+                      }
+                    },
+                    {
+                      $replaceRoot: {
+                        newRoot: {
+                          $mergeObjects: ["$$ROOT", "$dates"]
+                        }
+                      }
+                    },
+                    {
+                      $unset: "dates"
                     }
-                  );
+                  ]);
                   
-                  console.log('here');
+                  console.log('hree');
+             
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -549,7 +600,12 @@ export const getBalance = async(req,res)=>{
                     message:'Insufficient Balance'
                 })
              }
-      
+        }else{
+            res.send({
+                success:false,
+                message:'Something went wrong'
+            })  
+        }
     }catch(err) {
         res.status(500)
     }
