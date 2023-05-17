@@ -474,21 +474,16 @@ export const getBalance = async(req,res)=>{
         const status ='Booked'
         const userId = user._id
         const userName =user.signName
-        
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
-        console.log(user,fee,subtotal,total,image,language,ownerId,ownerName,movieName,location,showTime,screen,_id);
-      const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
-   
-      const hash = crypto.createHash('sha256')
+        const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
+        const hash = crypto.createHash('sha256')
         .update(movieName + userId + selectedSeats + date)
         .digest('hex');
         const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
-
         const userfind = await userModel.findOne({_id:user._id})
-        if(userfind){
             if(userfind.wallet >= total){
-                const show = await showModel.findOneAndUpdate(
+                 await showModel.findOneAndUpdate(
                     {
                       _id: _id,
                       "dates.date": { $eq: new Date(newdate) },
@@ -506,7 +501,7 @@ export const getBalance = async(req,res)=>{
                       ]
                     }
                   );
-             
+                  console.log('here');
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -553,12 +548,7 @@ export const getBalance = async(req,res)=>{
                     message:'Insufficient Balance'
                 })
              }
-        }else{
-            res.send({
-                success:false,
-                message:'Something went wrong'
-            })  
-        }
+      
     }catch(err) {
         res.status(500)
     }
