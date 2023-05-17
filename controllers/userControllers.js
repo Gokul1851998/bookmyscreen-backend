@@ -504,7 +504,8 @@ export const getBalance = async(req,res)=>{
                         { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
                       ]
                     }
-                  ).catch((err)=>console.log(err))
+                  ).catch((err) => console.log(err));
+                  
                   console.log(shows);
                   const newOrder = new orderModel({
                     userId,
