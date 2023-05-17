@@ -494,7 +494,7 @@ export const getBalance = async(req,res)=>{
                       }
                     },
                     {
-                      $addFields: {
+                      $set: {
                         dates: {
                           $map: {
                             input: "$dates",
@@ -516,15 +516,7 @@ export const getBalance = async(req,res)=>{
                                               {
                                                 $mergeObjects: [
                                                   "$$seat",
-                                                  {
-                                                    seatStatus: {
-                                                      $cond: [
-                                                        { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
-                                                        "sold",
-                                                        "$$seat.seatStatus"
-                                                      ]
-                                                    }
-                                                  }
+                                                  { seatStatus: "sold" }
                                                 ]
                                               },
                                               "$$seat"
@@ -543,22 +535,15 @@ export const getBalance = async(req,res)=>{
                       }
                     },
                     {
-                      $project: {
-                        _id: 1,
-                        dates: 1
-                      }
+                      $unset: ["_id", "__v"]
                     },
                     {
                       $replaceRoot: {
-                        newRoot: {
-                          $mergeObjects: ["$$ROOT", "$dates"]
-                        }
+                        newRoot: "$dates"
                       }
-                    },
-                    {
-                      $unset: "dates"
                     }
                   ]);
+                  
                   
                   console.log('hree');
                   const newOrder = new orderModel({
