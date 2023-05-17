@@ -483,7 +483,6 @@ export const getBalance = async(req,res)=>{
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
         const userfind = await userModel.findOne({_id:user._id})
             if(userfind.wallet >= total){
-                console.log(newdate,selectedSeats);
                  await showModel.findOneAndUpdate(
                     {
                       _id: _id,
@@ -495,12 +494,12 @@ export const getBalance = async(req,res)=>{
                         "dates.$[date].seats.$[seat].seatStatus": "sold"
                       }
                     },
-                    {
-                      arrayFilters: [
-                        { "date.date": { $eq: new Date(newdate) } },
-                        { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-                      ]
-                    }
+                    // {
+                    //   arrayFilters: [
+                    //     { "date.date": { $eq: new Date(newdate) } },
+                    //     { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+                    //   ]
+                    // }
                   );
                   console.log('here');
                   const newOrder = new orderModel({
