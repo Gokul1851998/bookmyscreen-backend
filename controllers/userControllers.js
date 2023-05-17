@@ -481,8 +481,9 @@ export const getBalance = async(req,res)=>{
         const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
         const userfind = await userModel.findOne({_id:user._id})
-        console.log(userfind,'///');
-        if(userfind){
+        
+            console.log(userfind.wallet,'-----');
+            console.log(total,'-----');
             if(userfind.wallet >= total){
                 const show = await showModel.findOneAndUpdate(
                     {
@@ -549,12 +550,7 @@ export const getBalance = async(req,res)=>{
                     message:'Insufficient Balance'
                 })
              }
-        }else{
-            res.send({
-                success:false,
-                message:'Something went wrong'
-            })  
-        }
+       
     }catch(err) {
         res.status(500)
     }
