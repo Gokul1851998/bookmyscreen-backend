@@ -485,41 +485,27 @@ export const getBalance = async(req,res)=>{
         const userfind = await userModel.findOne({_id:user._id})
         if(userfind){
             if(userfind.wallet >= total){
-                await showModel.aggregate([
-                    {
-                      $match: {
-                        _id: _id,
-                        "dates.date": { $eq: new Date(newdate) },
-                        "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-                      }
-                    },
-                    {
-                      $set: {
-                        dates: {
-                          $map: {
-                            input: "$dates",
-                            as: "date",
-                            in: {
-                              date: "$$date.date",
-                              seats: {
-                                $map: {
-                                  input: "$$date.seats",
-                                  as: "seat",
-                                  in: {
-                                    $cond: [
-                                      { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
-                                      { id: "$$seat.id", seatStatus: "sold" },
-                                      "$$seat"
-                                    ]
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
+                const filter = {
+                    _id: _id,
+                    "dates.date": new Date(newdate),
+                    "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
+                  };
+                  
+                  const update = {
+                    $set: {
+                      "dates.$[date].seats.$[seat].seatStatus": "sold"
                     }
-                  ]);
+                  };
+                  
+                  const options = {
+                    arrayFilters: [
+                      { "date.date": new Date(newdate) },
+                      { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+                    ]
+                  };
+                  
+                  await showModel.findOneAndUpdate(filter, update, options);
+                  
                   
                   
                   console.log('hree');
