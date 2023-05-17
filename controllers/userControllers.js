@@ -484,8 +484,8 @@ export const getBalance = async(req,res)=>{
         
             
             if(userfind.wallet >= total){
-                console.log('here');
-                const show = await showModel.findOneAndUpdate(
+                
+                 await showModel.findOneAndUpdate(
                     {
                       _id: _id,
                       "dates.date": { $eq: new Date(newdate) },
@@ -503,7 +503,7 @@ export const getBalance = async(req,res)=>{
                       ]
                     }
                   );
-                 console.log(show);
+            
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -535,6 +535,7 @@ export const getBalance = async(req,res)=>{
                           }
                         } 
                       });
+                      console.log(bookingId);
                     const bookings = await orderModel.findOne({bookingId:bookingId})
                     console.log(bookings);
                      if(bookings){
