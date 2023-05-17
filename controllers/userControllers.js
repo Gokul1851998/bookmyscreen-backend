@@ -490,7 +490,7 @@ export const getBalance = async(req,res)=>{
                 const shows = await showModel.findOneAndUpdate(
                     {
                       _id: _id,
-                      "dates.date": { $eq: new Date(newdate) },
+                      "dates.date": new Date(newdate),
                       "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
                     },
                     {
@@ -500,11 +500,13 @@ export const getBalance = async(req,res)=>{
                     },
                     {
                       arrayFilters: [
-                        { "date.date": { $eq: new Date(newdate) } },
+                        { "date.date": new Date(newdate) },
                         { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-                      ]
+                      ],
+                      new: true // Set 'new' option to true if you want to return the updated document
                     }
                   ).catch((err) => console.log(err));
+                  
                   
                   console.log(shows);
                   const newOrder = new orderModel({
