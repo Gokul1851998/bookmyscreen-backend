@@ -483,6 +483,7 @@ export const getBalance = async(req,res)=>{
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
         const userfind = await userModel.findOne({_id:user._id})
             if(userfind.wallet >= total){
+                console.log(newdate,selectedSeats);
                  await showModel.findOneAndUpdate(
                     {
                       _id: _id,
