@@ -475,7 +475,7 @@ export const getBalance = async(req,res)=>{
         const userName =user.signName
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
       const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
-   
+      console.log(newdate);
       const hash = crypto.createHash('sha256')
         .update(movieName + userId + selectedSeats + date)
         .digest('hex');
