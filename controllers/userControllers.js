@@ -485,10 +485,10 @@ export const getBalance = async(req,res)=>{
             
             if(userfind.wallet >= total){
                 
-                 await showModel.findOneAndUpdate(
+                await showModel.updateOne(
                     {
                       _id: _id,
-                      "dates.date": { $eq: new Date(newdate) },
+                      "dates.date": new Date(newdate),
                       "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
                     },
                     {
@@ -498,11 +498,12 @@ export const getBalance = async(req,res)=>{
                     },
                     {
                       arrayFilters: [
-                        { "date.date": { $eq: new Date(newdate) } },
+                        { "date.date": new Date(newdate) },
                         { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
                       ]
                     }
                   );
+                  
             
                   const newOrder = new orderModel({
                     userId,
