@@ -27,6 +27,7 @@ export const sendOtp = (req, res) => {
   
                 otpGenerator().then((otp) => {
                     sendMail(userData.signEmail, otp).then((result) => {
+                        console.log(userData.signEmail);
                         if (result.otpSent) {
                             otpVerify = otp
                             res.status(200).json(response)
@@ -536,6 +537,7 @@ export const getBalance = async(req,res)=>{
                         } 
                       });
                     const bookings = await orderModel.findOne({bookingId:bookingId})
+                    console.log(bookingId);
                      if(bookings){
                         res.send({
                             success:true,
