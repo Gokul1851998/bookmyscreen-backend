@@ -265,7 +265,7 @@ export const postUnblockOwner = async(req,res)=>{
 
 export const getMovies= async(req,res)=>{
     try{
-        const movies = await movieModel.find({}).sort({createdAt:-1})
+        const movies = await movieModel.find({})
         if(movies){
             res.send({
                 success:true,
@@ -304,7 +304,7 @@ export const postAddMovies = async (req,res)=>{
                      
                        const newMovie = new movieModel(movieData)
                        newMovie.save().then(async() => {
-                        const movies = await movieModel.find()
+                        const movies = await movieModel.find({})
                         res.send({
                             success:true,
                             message:'Movie Added',
