@@ -266,24 +266,25 @@ export const getPayment = async(req,res)=>{
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
            
       
-        const show = await showModel.findOneAndUpdate(
-          {
-            _id: _id,
-            "dates.date": { $eq: new Date(newdate) },
-            "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-          },
-          {
-            $set: {
-              "dates.$[date].seats.$[seat].seatStatus": "sold"
+        await showModel.findOneAndUpdate(
+            {
+              _id: _id,
+              "dates.date": new Date(newdate),
+              "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
+            },
+            {
+              $set: {
+                "dates.$[date].seats.$[seat].seatStatus": "sold"
+              }
+            },
+            {
+              arrayFilters: [
+                { "date.date": new Date(newdate) },
+                { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+              ],
+              new: true // Set 'new' option to true if you want to return the updated document
             }
-          },
-          {
-            arrayFilters: [
-              { "date.date": { $eq: new Date(newdate) } },
-              { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-            ]
-          }
-        );
+          ).catch((err) => console.log(err));
         
         const newOrder = new orderModel({
           userId,
@@ -487,7 +488,7 @@ export const getBalance = async(req,res)=>{
         if(userfind){
             if(userfind.wallet >= total){
                 
-                const shows = await showModel.findOneAndUpdate(
+                   await showModel.findOneAndUpdate(
                     {
                       _id: _id,
                       "dates.date": new Date(newdate),
@@ -508,7 +509,7 @@ export const getBalance = async(req,res)=>{
                   ).catch((err) => console.log(err));
                   
                   
-                  console.log(shows);
+                
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
