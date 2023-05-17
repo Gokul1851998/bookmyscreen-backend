@@ -481,7 +481,7 @@ export const getBalance = async(req,res)=>{
         .digest('hex');
         const randomNumber = Math.floor(Math.random() * 10) + 1;
         const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
-
+         console.log(bookingId);
         const userfind = await userModel.findOne({_id:user._id})
         if(userfind){
             if(userfind.wallet >= total){
@@ -503,7 +503,7 @@ export const getBalance = async(req,res)=>{
                       ]
                     }
                   );
-             
+                 console.log(show);
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
@@ -536,6 +536,7 @@ export const getBalance = async(req,res)=>{
                         } 
                       });
                     const bookings = await orderModel.findOne({bookingId:bookingId})
+                    console.log(bookings);
                      if(bookings){
                         res.send({
                             success:true,
