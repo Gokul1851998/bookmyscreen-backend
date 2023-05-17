@@ -474,7 +474,9 @@ export const getBalance = async(req,res)=>{
         const status ='Booked'
         const userId = user._id
         const userName =user.signName
+        
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
+        console.log(user,fee,subtotal,total,image,language,ownerId,ownerName,movieName,location,showTime,screen,_id);
       const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
    
       const hash = crypto.createHash('sha256')
