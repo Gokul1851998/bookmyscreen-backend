@@ -486,10 +486,8 @@ export const getBalance = async(req,res)=>{
         const userfind = await userModel.findOne({_id:user._id})
         if(userfind){
             if(userfind.wallet >= total){
-                // const wait = await showModel.findOne({_id:_id,"dates.date": { $eq: new Date(newdate) }, "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }}
-                //   )
-                // console.log(wait);
-                const shows = await showModel.updateOne(
+                
+                const shows = await showModel.findOneAndUpdate(
                     {
                       _id: _id,
                       "dates.date": { $eq: new Date(newdate) },
@@ -499,8 +497,14 @@ export const getBalance = async(req,res)=>{
                       $set: {
                         "dates.$[date].seats.$[seat].seatStatus": "sold"
                       }
+                    },
+                    {
+                      arrayFilters: [
+                        { "date.date": { $eq: new Date(newdate) } },
+                        { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
+                      ]
                     }
-                  ).catch((err)=>console.log(err))
+                  ).catch((err)=>console.log(object))
                   console.log(shows);
                   const newOrder = new orderModel({
                     userId,
