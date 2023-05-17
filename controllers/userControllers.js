@@ -494,41 +494,33 @@ export const getBalance = async(req,res)=>{
                       }
                     },
                     {
-                      $unwind: "$dates"
-                    },
-                    {
-                      $unwind: "$dates.seats"
-                    },
-                    {
-                      $match: {
-                        "dates.date": { $eq: new Date(newdate) },
-                        "dates.seats.id": { $in: selectedSeats.map(seat => seat.id) }
-                      }
-                    },
-                    {
                       $set: {
-                        "dates.seats.seatStatus": "sold"
-                      }
-                    },
-                    {
-                      $set: {
-                        "dates.seats": {
-                          $arrayElemAt: [
-                            {
-                              $filter: {
-                                input: "$dates.seats",
-                                as: "seat",
-                                cond: {
-                                  $in: ["$$seat.id", selectedSeats.map(seat => seat.id)]
+                        dates: {
+                          $map: {
+                            input: "$dates",
+                            as: "date",
+                            in: {
+                              date: "$$date.date",
+                              seats: {
+                                $map: {
+                                  input: "$$date.seats",
+                                  as: "seat",
+                                  in: {
+                                    $cond: [
+                                      { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
+                                      { id: "$$seat.id", seatStatus: "sold" },
+                                      "$$seat"
+                                    ]
+                                  }
                                 }
                               }
-                            },
-                            0
-                          ]
+                            }
+                          }
                         }
                       }
                     }
                   ]);
+                  
                   
                   console.log('hree');
                   const newOrder = new orderModel({
