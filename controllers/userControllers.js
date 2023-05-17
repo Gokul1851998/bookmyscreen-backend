@@ -501,10 +501,14 @@ export const getBalance = async(req,res)=>{
                     arrayFilters: [
                       { "date.date": new Date(newdate) },
                       { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
-                    ]
+                    ],
+                    returnOriginal: false
                   };
                   
-                  await showModel.findOneAndUpdate(filter, update, options);
+                  const result = await showModel.findOneAndUpdate(filter, update, options);
+                  
+                  console.log(result);
+                  
                   
                   
                   
