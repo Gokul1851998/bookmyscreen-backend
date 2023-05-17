@@ -476,12 +476,11 @@ export const getBalance = async(req,res)=>{
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
       const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
    
-    //   const hash = crypto.createHash('sha256')
-    //     .update(movieName + userId + selectedSeats + date)
-    //     .digest('hex');
-    //     const randomNumber = Math.floor(Math.random() * 10) + 1;
-    //     const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
-  const bookingId ='123456'
+      const hash = crypto.createHash('sha256')
+        .update(movieName + userId + selectedSeats + date)
+        .digest('hex');
+        const randomNumber = Math.floor(Math.random() * 10) + 1;
+        const bookingId = hash.slice(0, 5) + randomNumber.toString().padStart(3, '0')
          console.log(bookingId);
         const userfind = await userModel.findOne({_id:user._id})
         if(userfind){
