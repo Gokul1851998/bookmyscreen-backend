@@ -487,72 +487,52 @@ export const getBalance = async(req,res)=>{
             if(userfind.wallet >= total){
                 const selectedSeatIds = selectedSeats.map(seat => seat.id);
 
-const result = await showModel.aggregate([
-  {
-    $match: {
-      _id: ObjectId(_id)
-    }
-  },
-  {
-    $unwind: "$dates"
-  },
-  {
-    $match: {
-      "dates.date": new Date(newdate),
-      "dates.seats.id": { $in: selectedSeatIds }
-    }
-  },
-  {
-    $set: {
-      "dates.seats": {
-        $map: {
-          input: "$dates.seats",
-          as: "seat",
-          in: {
-            $cond: [
-              { $in: ["$$seat.id", selectedSeatIds] },
-              {
-                $mergeObjects: [
-                  "$$seat",
-                  { seatStatus: { $cond: [{ $eq: ["$$seat.id", "A-1"] }, "sold", "$$seat.seatStatus"] } }
-                ]
-              },
-              "$$seat"
-            ]
-          }
-        }
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$_id",
-      screenId: { $first: "$screenId" },
-      ownerId: { $first: "$ownerId" },
-      ownerName: { $first: "$ownerName" },
-      location: { $first: "$location" },
-      movieName: { $first: "$movieName" },
-      showTime: { $first: "$showTime" },
-      startDate: { $first: "$startDate" },
-      endDate: { $first: "$endDate" },
-      price: { $first: "$price" },
-      screen: { $first: "$screen" },
-      dates: { $push: "$dates" },
-      createdAt: { $first: "$createdAt" },
-      updatedAt: { $first: "$updatedAt" },
-      __v: { $first: "$__v" }
-    }
-  }
-]);
-
-if (result.length > 0) {
-  const updatedShow = result[0];
-  await showModel.findByIdAndUpdate(_id, updatedShow);
-  console.log("Seat status updated successfully.");
-} else {
-  console.log("No matching show found.");
-}
-                  console.log('hree');
+                const result = await showModel.aggregate([
+                  {
+                    $match: {
+                      _id: ObjectId(_id),
+                      "dates.date": new Date(newdate),
+                      "dates.seats.id": { $in: selectedSeatIds }
+                    }
+                  },
+                  {
+                    $set: {
+                      "dates.$[date].seats": {
+                        $map: {
+                          input: "$dates.$[date].seats",
+                          as: "seat",
+                          in: {
+                            $cond: [
+                              { $in: ["$$seat.id", selectedSeatIds] },
+                              { $mergeObjects: ["$$seat", { seatStatus: "sold" }] },
+                              "$$seat"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: "$dates",
+                          cond: { $eq: ["$$this.date", new Date(newdate)] }
+                        }
+                      },
+                      0
+                    ]
+                  }
+                ]);
+                
+                if (result.length > 0) {
+                  const updatedShow = result[0];
+                  await showModel.findByIdAndUpdate(_id, updatedShow);
+                  console.log("Seat status updated successfully.");
+                } else {
+                  console.log("No matching show found.");
+                }
+                  console.log('hre');
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
