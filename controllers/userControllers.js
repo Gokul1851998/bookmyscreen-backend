@@ -516,7 +516,15 @@ export const getBalance = async(req,res)=>{
                                               {
                                                 $mergeObjects: [
                                                   "$$seat",
-                                                  { seatStatus: "sold" }
+                                                  {
+                                                    seatStatus: {
+                                                      $cond: [
+                                                        { $in: ["$$seat.id", selectedSeats.map(seat => seat.id)] },
+                                                        "sold",
+                                                        "$$seat.seatStatus"
+                                                      ]
+                                                    }
+                                                  }
                                                 ]
                                               },
                                               "$$seat"
@@ -553,7 +561,6 @@ export const getBalance = async(req,res)=>{
                   ]);
                   
                   console.log('hree');
-             
                   const newOrder = new orderModel({
                     userId,
                    ownerId,
