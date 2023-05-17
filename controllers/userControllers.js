@@ -500,7 +500,7 @@ export const getBalance = async(req,res)=>{
                         "dates.$[date].seats.$[seat].seatStatus": "sold"
                       }
                     }
-                  );
+                  ).catch((err)=>console.log(err))
                   console.log(shows);
                   const newOrder = new orderModel({
                     userId,
