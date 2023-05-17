@@ -502,12 +502,13 @@ export const getBalance = async(req,res)=>{
                       { "date.date": new Date(newdate) },
                       { "seat.id": { $in: selectedSeats.map(seat => seat.id) } }
                     ],
-                    returnOriginal: false
+                    new: true
                   };
                   
                   const result = await showModel.findOneAndUpdate(filter, update, options);
                   
                   console.log(result);
+                  
                   
                   
                   
