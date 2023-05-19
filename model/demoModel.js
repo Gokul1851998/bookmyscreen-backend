@@ -14,7 +14,7 @@ const demoSchema = new Schema({
     Location:{
         type:String
     },
-    EmployeeCode:{
+    Id:{
         type:String
     },
     Body:{

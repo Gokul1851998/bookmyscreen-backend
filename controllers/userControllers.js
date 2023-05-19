@@ -736,16 +736,35 @@ export const getTheatreShows = async(req,res)=>{
 
 export const postdemoData = async(req,res)=>{
     try{
-      const {DocDate, Project,ProjectDes,Location,EmployeeCode,Body} = req.body
-      const newDemo = new demoModel({
-        DocDate,
-        Project,
-        ProjectDes,
-        Location,
-        EmployeeCode,
-        Body
-      })
-      await newDemo.save()
+      const {DocDate, Project,ProjectDes,Location,Body,Id} = req.body
+      const exist = await demoModel.findOne({Id,Id})
+      if(exist){
+       const data = await demoModel.findOneAndUpdate({Id,Id},
+            { $push: { Body: Body[0] } }
+            )
+            res.send({
+                success:true,
+                message:'Data added successfully',
+                data:data
+              })
+      }else{
+        const newDemo = new demoModel({
+            DocDate,
+            Project,
+            ProjectDes,
+            Location,
+            Body,
+            Id,
+          })
+          await newDemo.save()
+          const data = await demoModel.findOneAndUpdate({Id,Id})
+          res.send({
+            success:true,
+            message:'Data added successfully',
+            data:data
+          })
+      }
+      
       res.send({
         success:true,
         message:'Data added successfully'
@@ -759,6 +778,7 @@ export const postdemoData = async(req,res)=>{
 export const getdemoData = async(req,res)=>{
     try{
       const data = await demoModel.find()
+
       if(data){
         res.send({
             success:true,
@@ -776,3 +796,20 @@ export const getdemoData = async(req,res)=>{
         res.status(500)
     }
 }
+
+export const getSingleData = async(req,res)=>{
+    try{
+      const data = await demoModel.findOne({_id:req.params.id})
+      if(data){
+        res.send({
+            success:true,
+            message:'Data added successfully',
+            data:data
+          })
+      }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+

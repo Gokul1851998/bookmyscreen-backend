@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance, postForgotOtp, postResetPassword, getWallet, getSearch, editProfile, getUserOwner, getLocation, getTheatreShows, postdemoData, getdemoData} from '../controllers/userControllers.js'
+import {sendOtp,verifyOtpAndSignUp,signIn, getViewMovies, userResentOtp, getDates, getSeats, getBill, getPayment, userOrder, getcurrentuser, getOrder, getSingleorder, getOrderCancel, getVerify, getBalance, postForgotOtp, postResetPassword, getWallet, getSearch, editProfile, getUserOwner, getLocation, getTheatreShows, postdemoData, getdemoData, getSingleData} from '../controllers/userControllers.js'
 import { userAuthication } from '../jwtAuth/generateJwt.js'
 
 
@@ -31,5 +31,5 @@ router.get('/get-theatreShows/:id',getTheatreShows)
 
 router.post('/post-demoData',postdemoData)
 router.get('/get-demoData',getdemoData)
-
+router.get('/get-singleData/:id',getSingleData)
 export default router 
