@@ -11,6 +11,7 @@ import Razorpay from "razorpay";
 import orderModel from "../model/orderModel.js";
 import crypto from 'crypto'
 import { log } from "console";
+import demoModel from "../model/demoModel.js";
 
 export let otpVerify
 export const sendOtp = (req, res) => {
@@ -727,6 +728,50 @@ export const getTheatreShows = async(req,res)=>{
             message:'Shows not found',
         })
        }
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+
+export const postdemoData = async(req,res)=>{
+    try{
+      const {DocDate, Project,ProjectDes,Location,EmployeeCode,Body} = req.body
+      const newDemo = new demoModel({
+        DocDate,
+        Project,
+        ProjectDes,
+        Location,
+        EmployeeCode,
+        Body
+      })
+      await newDemo.save()
+      res.send({
+        success:true,
+        message:'Data added successfully'
+      })
+    }catch(err) {
+        res.status(500)
+    }
+}
+
+
+export const getdemoData = async(req,res)=>{
+    try{
+      const data = await demoModel.find()
+      if(data){
+        res.send({
+            success:true,
+            message:'Data added successfully',
+            data:data
+          })
+      }else{
+        res.send({
+            success:false,
+            message:'Empty'
+          })
+      }
+      
     }catch(err) {
         res.status(500)
     }
