@@ -45,7 +45,7 @@ export const verifyTokenAdmin = async(req, res, next)=>{
 }
 
 export const getAdminUser=async(req,res)=>{
-    const users = await userModel.find()
+    const users = await userModel.find({},{signPassword:0})
     const response ={
         success:true,
         message:'Userlist getted',
@@ -65,7 +65,7 @@ export const postBlockUser = async(req,res)=>{
             }}    
             )
         }
-        const usersData = await userModel.find({})
+        const usersData = await userModel.find({},{signPassword:0})
         res.send({
             success:true,
             message:'User blocked Successfully',
@@ -92,7 +92,7 @@ export const postUnblockUser =async(req,res)=>{
             )
         }
 
-        const userData = await userModel.find({})
+        const userData = await userModel.find({},{signPassword:0})
         res.send({
             success:true,
             message:'User unblocked successfully',
@@ -108,7 +108,7 @@ export const postUnblockUser =async(req,res)=>{
 }
 
 export const getAdminOwner=async(req,res)=>{
-    const owners = await ownerModel.find({})
+    const owners = await ownerModel.find({},{Password:0})
     return res.send({
         success:true,
         message:'Ownerlist fetched successfully',
@@ -149,7 +149,7 @@ export const postOwnerApprove = async(req,res,next)=>{
                 subject: "Account Approved",
                 text: `Your account has been approved. As a verified theater owner, you can now add movies and shows to our platform. Please familiarize yourself with the tools and features available. Contact us if you have any questions. Thank you for choosing to partner with us.`,
               };
-              const owners = await ownerModel.find()
+              const owners = await ownerModel.find({},{Password:0})
               sender.sendMail(mailOptions, function (error, info) {
                 if (error) {
                   console.log(error);
@@ -192,7 +192,7 @@ export const postOwnerDenied= async(req,res)=>{
                 status:"Denied"
             }
         })
-        const owners = await ownerModel.find()
+        const owners = await ownerModel.find({},{Password:0})
         res.send({
             success:true,
             message:'Status Changed Successfully',
@@ -223,7 +223,7 @@ export const postBlockOwner = async(req,res) =>{
         }}    
         )
     }
-    const owners = await ownerModel.find({})
+    const owners = await ownerModel.find({},{Password:0})
     res.send({
         success:true,
         message:'Owner blocked Successfully',
@@ -249,7 +249,7 @@ export const postUnblockOwner = async(req,res)=>{
             )
     }
 
-    const owners = await ownerModel.find({})
+    const owners = await ownerModel.find({},{Password:0})
     res.send({
         success:true,
         message:'Owner unblocked successfully',

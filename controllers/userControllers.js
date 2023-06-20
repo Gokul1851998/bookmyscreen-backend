@@ -10,8 +10,7 @@ import screenModel from "../model/screenModel.js";
 import Razorpay from "razorpay";
 import orderModel from "../model/orderModel.js";
 import crypto from 'crypto'
-import { log } from "console";
-import demoModel from "../model/demoModel.js";
+
 
 export let otpVerify
 export const sendOtp = (req, res) => {
@@ -597,7 +596,7 @@ export const postResetPassword = async(req,res)=>{
 
 export const getWallet = async(req,res)=>{
     try{
-    const user = await userModel.findOne({_id:req.body._id})
+    const user = await userModel.findOne({_id:req.body._id},{signPassword:0})
     if(user){
         res.send({
             success:true,
@@ -650,7 +649,7 @@ export const editProfile = async(req,res)=>{
             signPhone:editPhone
         }}
         )
-     const newUser = await userModel.findOne({_id:user._id})
+     const newUser = await userModel.findOne({_id:user._id},{signPassword:0})
      res.send({
         success:true,
         message:'User profile has been edited',
@@ -671,7 +670,7 @@ export const getUserOwner = async(req,res)=>{
     try{
     const order = await orderModel.find({userId:req.body._id,paymentstatus:'Active'})
     const ownerIds = order.map((item) => item.ownerId);
-    const owners = await ownerModel.find({ _id: { $in: ownerIds } });
+    const owners = await ownerModel.find({ _id: { $in: ownerIds } },{Password:0});
     const uniq = [...new Set(owners)];
     if(uniq){
         res.send({
@@ -693,7 +692,7 @@ export const getUserOwner = async(req,res)=>{
 export const getLocation = async(req,res)=>{
     try{
      const location = req.body.place
-     const theatre = await ownerModel.find({Location:location})
+     const theatre = await ownerModel.find({Location:location},{Password:0})
      if(theatre){
         res.send({
             success:true,
@@ -708,7 +707,7 @@ export const getLocation = async(req,res)=>{
 
 export const getTheatreShows = async(req,res)=>{
     try{
-       const owner = await ownerModel.findOne({_id:req.params.id})
+       const owner = await ownerModel.findOne({_id:req.params.id},{Password:0})
        const newdate = new Date().toISOString().slice(0, 10) + "T00:00:00.000Z";
        const shows = await showModel.find({
         $and: [
@@ -734,82 +733,6 @@ export const getTheatreShows = async(req,res)=>{
 }
 
 
-export const postdemoData = async(req,res)=>{
-    try{
-      const {DocDate, Project,ProjectDes,Location,Body,Id} = req.body
-      const exist = await demoModel.findOne({Id,Id})
-      if(exist){
-       const data = await demoModel.findOneAndUpdate({Id,Id},
-            { $push: { Body: Body[0] } }
-            )
-            res.send({
-                success:true,
-                message:'Data added successfully',
-                data:data
-              })
-      }else{
-        const newDemo = new demoModel({
-            DocDate,
-            Project,
-            ProjectDes,
-            Location,
-            Body,
-            Id,
-          })
-          await newDemo.save()
-          const data = await demoModel.findOneAndUpdate({Id,Id})
-          res.send({
-            success:true,
-            message:'Data added successfully',
-            data:data
-          })
-      }
-      
-      res.send({
-        success:true,
-        message:'Data added successfully'
-      })
-    }catch(err) {
-        res.status(500)
-    }
-}
 
-
-export const getdemoData = async(req,res)=>{
-    try{
-      const data = await demoModel.find()
-
-      if(data){
-        res.send({
-            success:true,
-            message:'Data added successfully',
-            data:data
-          })
-      }else{
-        res.send({
-            success:false,
-            message:'Empty'
-          })
-      }
-      
-    }catch(err) {
-        res.status(500)
-    }
-}
-
-export const getSingleData = async(req,res)=>{
-    try{
-      const data = await demoModel.findOne({_id:req.params.id})
-      if(data){
-        res.send({
-            success:true,
-            message:'Data added successfully',
-            data:data
-          })
-      }
-    }catch(err) {
-        res.status(500)
-    }
-}
 
 
