@@ -22,6 +22,7 @@ export const sendOtp = (req, res) => {
             if (user) {
 
                 response.userExist = true
+                response.statusCode = 201
                 res.status(200).json(response)
             } else {
   
@@ -56,6 +57,7 @@ export const verifyOtpAndSignUp = (req, res) => {
                 const newUser = new userModel(user)
                 newUser.save().then(() => {
                     response.status = true
+                    response.statusCode = 201
                     res.status(200).json(response)
                 })
             })
