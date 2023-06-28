@@ -16,7 +16,7 @@ export let otpVerify
 export const sendOtp = (req, res) => {
     try {
         let userData = req.body
-        
+        console.log(userData);
         let response = {}
         userModel.findOne({ signEmail: userData.signEmail }).then((user) => {
             if (user) {
