@@ -16,11 +16,9 @@ export let otpVerify
 export const sendOtp = (req, res) => {
     try {
         let userData = req.body
-        console.log(req.body)
         let response = {}
         userModel.findOne({ signEmail: userData.signEmail }).then((user) => {
             if (user) {
-
                 response.userExist = true
                 response.statusCode = 201
                 res.status(200).json(response)
@@ -30,7 +28,9 @@ export const sendOtp = (req, res) => {
                     sendMail(userData.signEmail, otp).then((result) => {
                         console.log(userData.signEmail);
                         if (result.otpSent) {
+                            console.log(otp,'gthguu');
                             otpVerify = otp
+                            console.log(otpVerify);
                             res.status(200).json(response)
                         } else {
                             res.status(500)
