@@ -49,6 +49,7 @@ export const verifyOtpAndSignUp = (req, res) => {
     try {
         const user = req.body.userSignup
         const otp = req.body.otp
+        console.log(req.body);
         let response = {} 
         if (otp === otpVerify) {  
             
