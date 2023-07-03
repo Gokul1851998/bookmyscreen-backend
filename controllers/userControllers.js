@@ -26,11 +26,8 @@ export const sendOtp = (req, res) => {
   
                 otpGenerator().then((otp) => {
                     sendMail(userData.signEmail, otp).then((result) => {
-                        console.log(userData.signEmail);
                         if (result.otpSent) {
-                            console.log(otp,'gthguu');
                             otpVerify = otp
-                            console.log(otpVerify);
                             res.status(200).json(response)
                         } else {
                             res.status(500)
@@ -49,8 +46,7 @@ export const verifyOtpAndSignUp = (req, res) => {
     try {
         const user = req.body.userSignup
         const otp = req.body.otp
-        console.log(req.body.userSignup);
-        console.log( req.body.otp);
+        console.log( req.body);
         console.log(otpVerify);
         let response = {} 
         if (otp === otpVerify) {  
