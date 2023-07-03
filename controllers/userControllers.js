@@ -54,7 +54,7 @@ export const verifyOtpAndSignUp = (req, res) => {
         console.log(otpVerify);
         let response = {} 
         if (otp === otpVerify) {  
-            
+            console.log('here');
             bcrypt.hash(user.signPassword, 10).then((hash) => {
             user.signPassword = hash
                 const newUser = new userModel(user)
