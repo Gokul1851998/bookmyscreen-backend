@@ -62,6 +62,7 @@ export const verifyOtpAndSignUp = (req, res) => {
             })
         } else {
             response.status = false
+            response.statusCode = 'Not found OTP'
             res.status(200).json(response)
         }
     } catch (err) {
