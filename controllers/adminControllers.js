@@ -21,11 +21,11 @@ export const adminLogin =(req, res)=>{
                     res.status(201).json(response)
                 }else{
                     response.message = 'Wrong password'
-                    res.status(201).json(response)
+                    res.status(200).json(response)
                 }
             }else{
                 response.message = "Wrong email Id"
-                res.status(201).json(response)
+                res.status(200).json(response)
             }
         })
     }catch(err){
