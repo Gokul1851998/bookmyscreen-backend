@@ -17,11 +17,16 @@ export const adminLogin =(req, res)=>{
                     response.login = true
                     const token = generateToken({adminId: result._id, email:email})
                     response.token = token
+                    response.statusCode = 201
+                    response.message = "correct password"
                     res.status(200).json(response)
                 }else{
+                    response.message = 'Wrong password'
+                    response.statusCode = 200
                     res.status(200).json(response)
                 }
             }else{
+                response.message = "Wrong email Id"
                 res.status(200).json(response)
             }
         })
