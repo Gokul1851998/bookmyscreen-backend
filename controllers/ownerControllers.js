@@ -27,6 +27,7 @@ export const ownerOtp = (req, res) => {
                     sendMail(ownerData.Email, otp).then((result) => {
                         if (result.otpSent) {
                             otpVerify = otp
+                            response.message ='Created the account'
                             res.status(200).json(response)
                         } else {
                             res.status(500)
@@ -56,6 +57,7 @@ export const signUp =(req,res)=>{
                 const newOwner = new ownerModel(owner)
                 newOwner.save().then(() => {
                     response.status = true
+                    response.message ='Login user'
                     res.status(200).json(response)
                 })
             })
