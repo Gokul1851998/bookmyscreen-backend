@@ -109,23 +109,23 @@ export const login=async(req,res)=>{
                         res.status(200).json(response)
                     } else {
                         response.incPass = true
-                        res.status(200).json(response)
+                        res.status(201).json(response)
                     }
                 })
               }else if(owner.status === "Pending"){
                 response.status = "Pending"
-                res.status(200).json(response)
+                res.status(201).json(response)
               }else if(owner.status === "Denied"){
                 response.status = "Denied"
-                res.status(200).json(response)
+                res.status(201).json(response)
               }else{
                 response.status = "You are Blocked"
                 response.block = true
-                res.status(200).json(response)
+                res.status(201).json(response)
               }
          }else{
             response.noUser = true
-            res.status(200).json(response)
+            res.status(201).json(response)
          }
        })
     }catch (err) {
