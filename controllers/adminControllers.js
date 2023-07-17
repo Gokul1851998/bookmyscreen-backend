@@ -327,6 +327,7 @@ export const postAddMovies = async (req,res)=>{
 export const postDeleteMovie = async(req,res)=>{
     try{
        const movieId = req.body.movieId
+       console.log(movieId)
        const movie = await movieModel.find({_id:movieId})
        if(movie){
         await movieModel.deleteOne({_id: movieId})
