@@ -7,9 +7,13 @@ export const generateToken = (details)=>{
 
  export const ownerAuthication = (req,res,next)=>{
         try {   
+                console.log(req.headers+'-----');
                 const authHeader =  req.headers.authorization
+                console.log(authHeader + '/////');
                 const token = authHeader.split(' ')[1];
+                console.log(token+'+++++');
                 const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+                console.log(decoded);
                 res.locals.Id = decoded.ownerId
                 next();
             } catch (error) {
@@ -23,7 +27,6 @@ export const generateToken = (details)=>{
 export const userAuthication =(req,res,next)=>{
         try {   
             const authHeader =  req.headers.authorization
-            console.log(authHeader);
             const token = authHeader.split(' ')[1];
             const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
             res.locals.Id = decoded.userId
