@@ -8,13 +8,9 @@ export const generateToken = (details)=>{
  export const ownerAuthication = (req,res,next)=>{
         try {   
                 const authHeader =  req.headers.authorization
-                console.log(authHeader);
                 const token = authHeader.split(' ')[1];
-                console.log(token);
                 const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-                console.log(decoded);
                 res.locals.Id = decoded.ownerId
-                console.log(res.locals.Id);
                 next();
             } catch (error) {
                 console.log(error);
