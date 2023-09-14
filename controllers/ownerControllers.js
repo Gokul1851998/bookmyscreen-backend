@@ -264,7 +264,6 @@ export const getSelectScreen = async(req,res)=>{
 
 export const postAddShow = async(req,res)=>{
     try{
-         console.log(req.body);
         const ownerId = req.body.owner._id
         const screen = req.body.screen
         const owner = await ownerModel.findOne({_id:ownerId})

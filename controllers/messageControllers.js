@@ -33,7 +33,6 @@ export const addMessage = async(req,res)=>{
         users:[from,to],
         sender:from
       })
-      console.log(data);
       if(data){
         res.send({
             success:true,

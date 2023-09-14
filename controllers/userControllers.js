@@ -46,11 +46,8 @@ export const verifyOtpAndSignUp = (req, res) => {
     try {
         const user = req.body.userSignup
         const otp = req.body.otp
-        console.log(req.body);
-        console.log(otpVerify);
         let response = {} 
         if (otp === otpVerify) {  
-            console.log('here');
             bcrypt.hash(user.signPassword, 10).then((hash) => {
             user.signPassword = hash
                 const newUser = new userModel(user)
@@ -478,7 +475,6 @@ export const getBalance = async(req,res)=>{
         const userId = user._id
         const userName =user.signName
         const {ownerId,ownerName,movieName,location,showTime,screen,_id} = req.body.details.showDetails
-        console.log(_id);
         const newdate = new Date(date).toISOString().slice(0, 10) + "T00:00:00.000Z";
         const hash = crypto.createHash('sha256')
         .update(movieName + userId + selectedSeats + date)
@@ -544,7 +540,6 @@ export const getBalance = async(req,res)=>{
                         } 
                       });
                     const bookings = await orderModel.findOne({bookingId:bookingId})
-                    console.log(bookingId);
                      if(bookings){
                         res.send({
                             success:true,
